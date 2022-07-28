@@ -32,8 +32,10 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(
         validators=(MinValueValidator(1),)
     )
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        ordering = ('-created',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -119,7 +121,7 @@ class Ingredient(models.Model):
 class IngredientAmountRecipe(models.Model):
     ingredient = models.ForeignKey(
         'Ingredient',
-        on_delete=models.CASCADE,
+        on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
         'Recipe',
@@ -129,6 +131,15 @@ class IngredientAmountRecipe(models.Model):
     amount = models.IntegerField(
         validators=(MinValueValidator(1),),
     )
+
+    class Meta:
+        verbose_name_plural = 'Количество ингредиентов в рецепте'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe'
+            )
+        ]
 
 
 class Tag(models.Model):

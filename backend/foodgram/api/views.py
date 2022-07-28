@@ -5,12 +5,15 @@ from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
-from .serializers import TagSerializer, IngredientSerializer, RecipeReadSerializer, UserCustomCreateSerializer, SubscribeSerializer
+from .serializers import TagSerializer, IngredientSerializer, RecipeReadSerializer, UserCustomCreateSerializer, SubscribeSerializer, RecipeWriteSerializer
 from recipes.models import Tag, Recipe, Ingredient
 from users.models import User, Follow
 
 
 class CustomUserViewSet(UserViewSet):
+    """Кастосный вьюсет пользователя.
+    Пользователи, подписки.
+    """
     queryset = User.objects.all()
     pagination_class = LimitOffsetPagination
 
@@ -52,3 +55,11 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeReadSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return RecipeReadSerializer
+        return RecipeWriteSerializer
