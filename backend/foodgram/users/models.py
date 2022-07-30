@@ -3,8 +3,6 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
 
-
-
 class User(AbstractUser):
     """Модель пользователей."""
     username_validator = UnicodeUsernameValidator()

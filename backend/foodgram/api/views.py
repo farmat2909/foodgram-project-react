@@ -1,19 +1,21 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
 from djoser.views import UserViewSet
-
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import (LimitOffsetPagination,
+                                       PageNumberPagination)
 from rest_framework.response import Response
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
-from .serializers import TagSerializer, IngredientSerializer, RecipeReadSerializer, UserCustomCreateSerializer, SubscribeSerializer, RecipeWriteSerializer
-from recipes.models import Tag, Recipe, Ingredient
-from users.models import User, Follow
+
+from recipes.models import Favorite, Ingredient, Recipe, Tag
+from users.models import Follow, User
+
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeReadSerializer, RecipeWriteSerializer,
+                          SubscribeSerializer, TagSerializer,
+                          UserCustomCreateSerializer)
 
 
 class CustomUserViewSet(UserViewSet):
-    """Кастосный вьюсет пользователя.
-    Пользователи, подписки.
-    """
     queryset = User.objects.all()
     pagination_class = LimitOffsetPagination
 
@@ -59,7 +61,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
+
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeReadSerializer
         return RecipeWriteSerializer
+
+    @action(detail=True, methods=['post', 'delete'], serializer_class=FavoriteSerializer)
+    def favorite(self, request, pk=None):
+        user = request.user.id
+        print(user)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        print(recipe)
+        serializer = FavoriteSerializer(data={'user': user, 'recipe': recipe.id}, context={'request': request})
+        if request.method == 'POST':
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif request.method == 'DELETE':
+            favorite = Favorite.objects.filter(user=user, recipe=recipe)
+            if favorite:
+                favorite.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
