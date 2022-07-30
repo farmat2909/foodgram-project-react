@@ -67,7 +67,9 @@ class Favorite(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f' У пользователя {self.user} в избранном рецепт {self.recipe}'
+        return (
+            f' У пользователя {self.user} в избранном рецепт {self.recipe}'
+            )
 
 
 class ShopingCart(models.Model):
@@ -76,13 +78,13 @@ class ShopingCart(models.Model):
         User,
         null=True,
         on_delete=models.SET_NULL,
-        related_name='shoping_cart'
+        related_name='shopping_cart'
     )
     recipe = models.ForeignKey(
         'Recipe',
         null=True,
         on_delete=models.SET_NULL,
-        related_name='shoping_cart'
+        related_name='shopping_cart'
     )
 
     class Meta:
@@ -90,12 +92,14 @@ class ShopingCart(models.Model):
         verbose_name_plural = 'Список покупок'
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'recipe'], name='unique_shoping'
+                fields=['user', 'recipe'], name='unique_shopping'
             )
         ]
 
     def __str__(self) -> str:
-        return f' У пользователя {self.user} в списке покупок {self.recipe}'
+        return (
+            f' У пользователя {self.user} в списке покупок {self.recipe}'
+            )
 
 
 class Ingredient(models.Model):
@@ -118,14 +122,14 @@ class Ingredient(models.Model):
 
 
 class IngredientAmountRecipe(models.Model):
+    """Промежуточная модель ингредиентов с количеством."""
     ingredient = models.ForeignKey(
         'Ingredient',
         on_delete=models.CASCADE
     )
     recipe = models.ForeignKey(
         'Recipe',
-        on_delete=models.CASCADE
-        
+        on_delete=models.CASCADE  
     )
     amount = models.IntegerField(
         validators=(MinValueValidator(1),),
@@ -172,5 +176,3 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
-
-
