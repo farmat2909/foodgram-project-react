@@ -1,14 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, filters
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from recipes.models import Favorite, Ingredient, Recipe, ShopingCart, Tag
 from users.models import Follow, User
-
 from .filters import RecipeFilter
 from .permissions import AuthorOrAdminOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
@@ -23,6 +22,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     pagination_class = LimitOffsetPagination
     permission_classes = (AuthorOrAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
 
     @action(detail=False, pagination_class=LimitOffsetPagination)
     def subscriptions(self, request):
@@ -40,14 +40,16 @@ class CustomUserViewSet(UserViewSet):
         context = {'request': request}
         serializer = SubscribeSerializer(data=data, context=context)
         if request.method == 'POST':
-            if serializer.is_valid():
+            try:
+                serializer.is_valid()
                 serializer.save()
                 return Response(serializer.data)
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        elif request.method == 'DELETE':
+            except:
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                    )
+        if request.method == 'DELETE':
             subscription = Follow.objects.filter(
                 user=user, following=author)
             if subscription:
@@ -66,6 +68,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -79,9 +83,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     filter_class = RecipeFilter
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-    def perform_update(self, serializer):
         serializer.save(author=self.request.user)
 
     def get_serializer_class(self):
@@ -116,12 +117,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         context = {'request': request}
         serializer = serializer(data=data, context=context)
         if request.method == 'POST':
-            if serializer.is_valid():
+            try:
+                serializer.is_valid()
                 serializer.save()
                 return Response(serializer.data)
-            return Response(
-                serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        elif request.method == 'DELETE':
+            except:
+                return Response(
+                    serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if request.method == 'DELETE':
             favorite = model.objects.filter(user=user, recipe=recipe)
             if favorite:
                 favorite.delete()

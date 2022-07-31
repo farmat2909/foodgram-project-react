@@ -1,12 +1,24 @@
 from django.contrib import admin
+from django.forms.models import BaseInlineFormSet
 
 from .models import (Favorite, Ingredient, IngredientAmountRecipe, Recipe,
                      ShopingCart, Tag)
 
 
+class RequiredInlineFormSet(BaseInlineFormSet):
+    def _construct_form(self, i, **kwargs):
+        form = (
+            super(RequiredInlineFormSet, self)._construct_form(i, **kwargs)
+        )
+        if i < 1:
+            form.empty_permitted = False
+        return form
+
+
 class IngredientInline(admin.TabularInline):
     model = IngredientAmountRecipe
     extra = 1
+    formset = RequiredInlineFormSet
 
 
 class RecipeAdmin(admin.ModelAdmin):
@@ -36,19 +48,24 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class ShopingCartadmin(admin.ModelAdmin):
+class ShopingCartAdmin(admin.ModelAdmin):
     """Админ панель списка покупок."""
     list_display = ('user', 'recipe')
 
 
-class Favoriteadmin(admin.ModelAdmin):
+class FavoriteAdmin(admin.ModelAdmin):
     """Админ панель избранного."""
     list_display = ('user', 'recipe')
+
+
+class IngredientAmountAdmin(admin.ModelAdmin):
+    """Админ панель избранного."""
+    list_display = ('ingredient', 'recipe', 'amount')
 
 
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
-admin.site.register(ShopingCart, ShopingCartadmin)
-admin.site.register(Favorite, Favoriteadmin)
-admin.site.register(IngredientAmountRecipe)
+admin.site.register(ShopingCart, ShopingCartAdmin)
+admin.site.register(Favorite, FavoriteAdmin)
+admin.site.register(IngredientAmountRecipe, IngredientAmountAdmin)
