@@ -166,7 +166,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Ингредиенты должны присутствовать в рецепте.'
             )
-        if len(data['tags']) == 0:
+        if len(tags) == 0:
             raise serializers.ValidationError(
                 'Необходимо указать тег.'
             )
