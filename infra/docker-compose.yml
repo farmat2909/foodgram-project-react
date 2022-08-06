@@ -34,8 +34,7 @@ services:
 
   web:
     build:
-      context: ../backend/foodgram
-      dockerfile: Dockerfile
+      image: farmat/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
