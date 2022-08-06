@@ -56,13 +56,14 @@ jobs:
     if: github.ref == 'refs/heads/master'
     steps:
     - name: Copy single file to remote
-        uses: garygrossgarten/github-action-scp@release
-        with:
-    local: infra/docker-compose.yml
-              remote: scp/home/farmat/docker-compose.yml
-              host: ${{ secrets.HOST }}
-              ${{: ${{ secrets.SSH_KEY }}
-              password: ${{ secrets.PASSPHRASE }}
+      uses: garygrossgarten/github-action-scp@release
+      with:
+        local: infra/docker-compose.yml
+        remote: scp/home/farmat/docker-compose.yml
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USER }}
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.PASSPHRASE }}
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
