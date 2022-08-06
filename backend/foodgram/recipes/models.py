@@ -68,7 +68,7 @@ class Favorite(models.Model):
     def __str__(self) -> str:
         return (
             f' У пользователя {self.user} в избранном рецепт {self.recipe}'
-            )
+        )
 
 
 class ShopingCart(models.Model):
@@ -98,7 +98,7 @@ class ShopingCart(models.Model):
     def __str__(self) -> str:
         return (
             f' У пользователя {self.user} в списке покупок {self.recipe}'
-            )
+        )
 
 
 class Ingredient(models.Model):
@@ -128,7 +128,7 @@ class IngredientAmountRecipe(models.Model):
     )
     recipe = models.ForeignKey(
         'Recipe',
-        on_delete=models.CASCADE  
+        on_delete=models.CASCADE
     )
     amount = models.IntegerField(
         validators=(MinValueValidator(1),),

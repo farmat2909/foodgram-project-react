@@ -50,7 +50,7 @@ class CustomUserViewSet(UserViewSet):
                 return Response(
                     serializer.errors,
                     status=status.HTTP_400_BAD_REQUEST
-                    )
+                )
         if request.method == 'DELETE':
             subscription = Follow.objects.filter(
                 user=user, following=author)

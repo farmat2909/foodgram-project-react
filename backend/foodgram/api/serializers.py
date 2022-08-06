@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer
 from drf_base64.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientAmountRecipe,
@@ -46,8 +45,8 @@ class UserSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         return Follow.objects.filter(
-                                user__username=user,
-                                following__username=obj.username).exists()
+            user__username=user,
+            following__username=obj.username).exists()
 
 
 class UserCustomCreateSerializer(UserCreateSerializer):
@@ -271,8 +270,8 @@ class SubscribeSerializer(serializers.ModelSerializer):
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         return Follow.objects.filter(
-                user__username=user,
-                following__username=obj.following.username).exists()
+            user__username=user,
+            following__username=obj.following.username).exists()
 
     def get_recipes(self, obj):
         queryset = self.context.get('request')
