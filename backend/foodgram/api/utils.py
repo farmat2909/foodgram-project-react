@@ -4,12 +4,12 @@ from django.http import HttpResponse
 from recipes.models import IngredientAmountRecipe
 
 
-def download_shopping_cart(request):
+def download_shopp_cart(request):
     """
     Загрузка списка покупок.
     """
     ingredients = IngredientAmountRecipe.objects.filter(
-        recipe__shoping_cart__user=request.user).values(
+        recipe__shopping_cart__user=request.user).values(
         'ingredient__name',
         'ingredient__measurement_unit').annotate(total=Sum('amount'))
     shopping_list = 'Список покупок:\n\n'

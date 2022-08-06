@@ -1,30 +1,33 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets, filters
+from rest_framework import status, viewsets, filters, permissions
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from recipes.models import Favorite, Ingredient, Recipe, ShopingCart, Tag
 from users.models import Follow, User
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientSearchFilter
+from .pagination import CustomPagination
 from .permissions import AuthorOrAdminOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeReadSerializer, RecipeWriteSerializer,
                           ShopingCartSerializer, SubscribeSerializer,
                           TagSerializer)
-from .utils import download_shopping_cart
+from .utils import download_shopp_cart
 
 
 class CustomUserViewSet(UserViewSet):
     """Создание пользователя и подписки."""
     queryset = User.objects.all()
-    pagination_class = LimitOffsetPagination
     permission_classes = (AuthorOrAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend,)
+    pagination_class = CustomPagination
 
-    @action(detail=False, pagination_class=LimitOffsetPagination)
+    def get_paginated_response(self, data):
+        return super().get_paginated_response(data)
+
+    @action(detail=False)
     def subscriptions(self, request):
         queryset = request.user.follower
         context = {'request': request}
@@ -33,7 +36,7 @@ class CustomUserViewSet(UserViewSet):
         return Response(serializer.data)
 
     @action(detail=True, methods=['post', 'delete'])
-    def subscribe(self, request, id=None):
+    def subscribe(self, request, id):
         user = request.user.pk
         author = get_object_or_404(User, pk=id)
         data = {'user': user, 'following': author.id}
@@ -62,14 +65,16 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = (AuthorOrAdminOrReadOnly,)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientSearchFilter
+    permission_classes = (AuthorOrAdminOrReadOnly,)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -77,10 +82,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     Добавление в избранное, удаление.
     Добавление в список покупок, удаление и скачивание списка."""
     queryset = Recipe.objects.all()
+    pagination_class = CustomPagination
     serializer_class = RecipeReadSerializer
     permission_classes = (AuthorOrAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
-    filter_class = RecipeFilter
+    filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -103,16 +109,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['post', 'delete'],
         serializer_class=ShopingCartSerializer)
     def shopping_cart(self, request, pk=None):
-        return self.__logic_favorite_shopping_cart(
+        return self._logic_favorite_shopping_cart(
             request, pk, Recipe, ShopingCart, ShopingCartSerializer)
 
-    @action(detail=False)
+    @action(detail=False, permission_classes=(AuthorOrAdminOrReadOnly,))
     def download_shopping_cart(self, request):
-        return download_shopping_cart(request)
+        return download_shopp_cart(request)
 
-    def _logic_favorite_shopping_cart(self, request, recipe_id, model_recipe, model, serializer):
+    def _logic_favorite_shopping_cart(
+            self, request, pk, model_recipe, model, serializer):
         user = request.user.id
-        recipe = get_object_or_404(model_recipe, pk=recipe_id)
+        recipe = get_object_or_404(model_recipe, pk=pk)
         data = {'user': user, 'recipe': recipe.id}
         context = {'request': request}
         serializer = serializer(data=data, context=context)

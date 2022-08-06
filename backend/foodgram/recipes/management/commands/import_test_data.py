@@ -19,7 +19,7 @@ class Command(BaseCommand):
 
     def import_ingredient(self, file='ingredients.csv'):
         print(f'Загрузка {file}...')
-        file_path = f'c://Dev/foodgram-project-react/data/{file}'
+        file_path = f'data/{file}'
         with open(file_path, newline='', encoding='utf-8') as f:
             fieldnames = ['name', 'measurement_unit']
             reader = csv.DictReader(f, fieldnames=fieldnames)

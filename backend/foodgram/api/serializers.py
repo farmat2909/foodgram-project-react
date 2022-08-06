@@ -248,11 +248,7 @@ class SubscribeSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='following.first_name')
     last_name = serializers.ReadOnlyField(source='following.last_name')
     is_subscribed = serializers.SerializerMethodField()
-    recipes = RecipeSerializer(
-        many=True,
-        source='following.recipes',
-        read_only=True
-    )
+    recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -278,6 +274,21 @@ class SubscribeSerializer(serializers.ModelSerializer):
         return Follow.objects.filter(
                 user__username=user,
                 following__username=obj.following.username).exists()
+
+    def get_recipes(self, obj):
+        queryset = self.context.get('request')
+        recipes_limit = queryset.query_params.get('recipes_limit')
+        author = obj.following.id
+        if not recipes_limit:
+            return RecipeSerializer(
+                Recipe.objects.filter(author=author),
+                many=True, context={'request': queryset}
+            ).data
+        return RecipeSerializer(
+            Recipe.objects.filter(author=author)[:int(recipes_limit)],
+            many=True,
+            context={'request': queryset}
+        ).data
 
     def validate(self, data):
         user = data['user']
