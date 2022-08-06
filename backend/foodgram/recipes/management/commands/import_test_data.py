@@ -1,8 +1,6 @@
 import csv
-import subprocess as sub
 
 from django.core.management.base import BaseCommand
-
 from recipes.models import Ingredient
 
 
@@ -15,7 +13,6 @@ class Command(BaseCommand):
         self.import_ingredient()
 
         print('Загрузка тестовых данных завершена.')
-
 
     def import_ingredient(self, file='ingredients.csv'):
         print(f'Загрузка {file}...')

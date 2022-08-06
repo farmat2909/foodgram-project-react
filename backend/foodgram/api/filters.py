@@ -1,7 +1,6 @@
 from django.db.models import IntegerField, Value
 from django_filters import rest_framework as filters
-
-from recipes.models import Recipe, Tag, Ingredient
+from recipes.models import Ingredient, Recipe, Tag
 
 
 class IngredientSearchFilter(filters.FilterSet):

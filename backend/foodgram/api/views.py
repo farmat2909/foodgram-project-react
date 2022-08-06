@@ -1,14 +1,13 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import status, viewsets, filters, permissions
-from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.response import Response
-
 from recipes.models import Favorite, Ingredient, Recipe, ShopingCart, Tag
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from users.models import Follow, User
-from .filters import RecipeFilter, IngredientSearchFilter
+
+from .filters import IngredientSearchFilter, RecipeFilter
 from .pagination import CustomPagination
 from .permissions import AuthorOrAdminOrReadOnly
 from .serializers import (FavoriteSerializer, IngredientSerializer,
