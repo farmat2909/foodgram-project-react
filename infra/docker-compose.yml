@@ -33,8 +33,7 @@ services:
       - ./.env
 
   web:
-    build:
-      image: farmat/foodgram:latest
+    image: farmat/foodgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
