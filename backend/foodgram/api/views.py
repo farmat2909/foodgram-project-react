@@ -28,6 +28,11 @@ class CustomUserViewSet(UserViewSet):
     def subscriptions(self, request):
         queryset = request.user.follower
         context = {'request': request}
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = SubscribeSerializer(
+                queryset, context=context, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = SubscribeSerializer(
             queryset, context=context, many=True)
         return Response(serializer.data)
