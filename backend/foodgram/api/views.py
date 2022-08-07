@@ -26,7 +26,7 @@ class CustomUserViewSet(UserViewSet):
     def get_paginated_response(self, data):
         return super().get_paginated_response(data)
     """не могу решить проблему с отображением страницы подписок"""
-    @action(detail=False)
+    @action(detail=False, methods=['get'])
     def subscriptions(self, request):
         queryset = request.user.follower
         context = {'request': request}
