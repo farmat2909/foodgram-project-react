@@ -34,7 +34,6 @@ class RecipeFilter(filters.FilterSet):
         field_name='tags__slug',
         to_field_name='slug',
     )
-    author = filters.CharFilter(lookup_expr='exact')
     is_in_shopping_cart = filters.BooleanFilter(
         field_name='is_in_shopping_cart', method='filter'
     )
