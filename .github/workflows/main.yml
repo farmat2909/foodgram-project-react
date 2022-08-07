@@ -42,7 +42,7 @@ jobs:
       with:
         context: ./backend/foodgram
         push: true
-        tags: farmat/foodgram:latest
+        tags: farmat/foodgram-backend:latest
     - name: Push frontend to Docker Hub
       uses: docker/build-push-action@v2
       with:
@@ -64,7 +64,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker compose down
-          sudo docker pull farmat/foodgram:latest
+          sudo docker pull farmat/foodgram-backend:latest
           sudo systemctl stop nginx
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env

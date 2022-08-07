@@ -7,7 +7,7 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
-      - web
+      - backend
 
   nginx:
     image: nginx:1.19.3
@@ -31,8 +31,8 @@ services:
     env_file:
       - ./.env
 
-  web:
-    image: farmat/foodgram:latest
+  backend:
+    image: farmat/foodgram-backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
