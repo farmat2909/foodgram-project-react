@@ -23,8 +23,6 @@ class CustomUserViewSet(UserViewSet):
     permission_classes = (AuthorOrAdminOrReadOnly,)
     pagination_class = CustomPagination
 
-    def get_paginated_response(self, data):
-        return super().get_paginated_response(data)
     """не могу решить проблему с отображением страницы подписок"""
     @action(detail=False, methods=['get'])
     def subscriptions(self, request):
@@ -70,8 +68,8 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (IngredientSearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientSearchFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
