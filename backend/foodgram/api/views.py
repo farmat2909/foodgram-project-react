@@ -81,11 +81,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """Создание и получение рецепта.
     Добавление в избранное, удаление.
     Добавление в список покупок, удаление и скачивание списка."""
-    queryset = Recipe.objects.all()
-    pagination_class = CustomPagination
-    serializer_class = RecipeReadSerializer
-    permission_classes = (AuthorOrAdminOrReadOnly,)
-
+    # queryset = Recipe.objects.all()
+    # pagination_class = CustomPagination
+    # serializer_class = RecipeReadSerializer
+    # permission_classes = (AuthorOrAdminOrReadOnly,)
+    # filter_backends = (DjangoFilterBackend,)
+    # filterset_class = RecipeFilter
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
