@@ -20,13 +20,12 @@ from .utils import download_shopp_cart
 class CustomUserViewSet(UserViewSet):
     """Создание пользователя и подписки."""
     queryset = User.objects.all()
-    permission_classes = (AuthorOrAdminOrReadOnly,)
     pagination_class = CustomPagination
 
     """не могу решить проблему с отображением страницы подписок"""
     @action(detail=False, methods=['get'])
     def subscriptions(self, request):
-        queryset = request.user.follower
+        queryset = User.objects.filter(following__user=request.user)
         context = {'request': request}
         page = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(
