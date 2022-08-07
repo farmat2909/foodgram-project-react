@@ -64,16 +64,14 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение тегов."""
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (AuthorOrAdminOrReadOnly,)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     """Получение ингредиентов."""
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (DjangoFilterBackend,)
-    filterset_class = IngredientSearchFilter
-    permission_classes = (AuthorOrAdminOrReadOnly,)
+    filter_backends = (IngredientSearchFilter,)
+    search_fields = ('^name',)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
