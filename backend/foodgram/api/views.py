@@ -25,7 +25,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_paginated_response(self, data):
         return super().get_paginated_response(data)
-
+    """не могу решить проблему с отображением страницы подписок"""
     @action(detail=False)
     def subscriptions(self, request):
         queryset = request.user.follower
@@ -110,7 +110,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         return self._logic_favorite_shopping_cart(
             request, pk, Recipe, ShopingCart, ShopingCartSerializer)
-
+    """список скачивается , но нельзя удалить и не видны данные на страницы.
+    Не могу решить"""
     @action(detail=False, permission_classes=(AuthorOrAdminOrReadOnly,))
     def download_shopping_cart(self, request):
         return download_shopp_cart(request)
