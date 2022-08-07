@@ -24,7 +24,7 @@ class CustomUserViewSet(UserViewSet):
     pagination_class = CustomPagination
 
     """не могу решить проблему с отображением страницы подписок"""
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], pagination_class=CustomPagination)
     def subscriptions(self, request):
         queryset = request.user.follower
         context = {'request': request}
