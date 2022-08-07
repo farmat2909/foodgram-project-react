@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from recipes.models import Favorite, Ingredient, Recipe, ShopingCart, Tag
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import Follow, User
@@ -25,9 +25,9 @@ class CustomUserViewSet(UserViewSet):
     """не могу решить проблему с отображением страницы подписок"""
     @action(
         detail=False,
-        methods=['get'], pagination_class=(AuthorOrAdminOrReadOnly,))
+        methods=['get'], permission_classes=(AuthorOrAdminOrReadOnly,))
     def subscriptions(self, request):
-        queryset = User.objects.filter(following__user=request.user)
+        queryset = request.user.follower
         context = {'request': request}
         serializer = SubscribeSerializer(
             queryset, context=context, many=True)
@@ -109,7 +109,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             request, pk, Recipe, ShopingCart, ShopingCartSerializer)
     """список скачивается , но нельзя удалить и не видны данные на страницы.
     Не могу решить"""
-    @action(detail=False, permission_classes=(AuthorOrAdminOrReadOnly,))
+    @action(detail=False, permission_classes=(permissions.IsAuthenticated,))
     def download_shopping_cart(self, request):
         return download_shopp_cart(request)
 
