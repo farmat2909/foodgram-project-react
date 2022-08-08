@@ -93,15 +93,15 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
             'amount'
         )
 
-    def validate_amount(self, data):
-        if int(data) < 1:
+    def validate_amount(self, value):
+        if int(value) < 1:
             raise serializers.ValidationError({
                 'ingredients': (
                     'Количество должно быть больше 1'
                 ),
-                'msg': data
+                'msg': value
             })
-        return data
+        return value
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -140,7 +140,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         author = self.context.get('request').user
         if author.is_anonymous:
             return None
-        return obj.shopping_cart.filter(user=author, pk=obj.pk).exists()
+        return obj.shopping_cart.filter(user=author, recipe=obj.pk).exists()
 
 
 class RecipeWriteSerializer(serializers.ModelSerializer):
