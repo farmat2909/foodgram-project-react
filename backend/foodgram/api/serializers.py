@@ -93,16 +93,6 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
             'amount'
         )
 
-    def validate_amount(self, value):
-        if int(value) < 1:
-            raise serializers.ValidationError({
-                'amount': (
-                    'Количество должно быть положительным'
-                ),
-                'msg': value
-            })
-        return value
-
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор рецепта на чтение."""
@@ -193,9 +183,9 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     {'ingredient': 'Ингредиент не может повторяться!'}
                 )
-            if key == 'amount' and ingredients[key] < 1:
+            elif key == 'amount' and int(ingredients_data[key]) < 1:
                 raise serializers.ValidationError(
-                    {'amount': 'Количесвто должно быть положительным.'}
+                    {'amount': 'Количество должно быть положительным.'}
                 )
             ingredients_data.append(key)
         return data
