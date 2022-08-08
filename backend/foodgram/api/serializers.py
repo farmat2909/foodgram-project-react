@@ -176,7 +176,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             )
         if len(tags) == 0:
             raise serializers.ValidationError(
-                'Необходимо указать тег.'
+                {'tags': 'Необходимо указать тег.'}
             )
         if data['cooking_time'] < 0:
             raise serializers.ValidationError(
@@ -191,7 +191,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         for key in ingredients:
             if key in ingredients_data:
                 raise serializers.ValidationError(
-                    'Ингредиент не может повторяться!'
+                    {'ingredient': 'Ингредиент не может повторяться!'}
                 )
             if key == 'amount' and key < 1:
                 raise serializers.ValidationError(
