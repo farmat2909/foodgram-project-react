@@ -29,10 +29,19 @@ class CustomUserViewSet(UserViewSet):
         permission_classes=(AuthorOrAdminOrReadOnly,),
         pagination_class=CustomPagination)
     def subscriptions(self, request):
-        queryset = request.user.follower
+        queryset = request.user.follower.all()
         context = {'request': request}
-        serializer = SubscribeSerializer(
-            queryset, context=context, many=True)
+        # serializer = SubscribeSerializer(
+        #     queryset, context=context, many=True)
+        # return Response(serializer.data)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = SubscribeSerializer(
+                page, context=context, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = SubscribeSerializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post', 'delete'])
