@@ -193,7 +193,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     {'ingredient': 'Ингредиент не может повторяться!'}
                 )
-            if key == 'amount' and key < 1:
+            if key == 'amount' and ingredients[key] < 1:
                 raise serializers.ValidationError(
                     {'amount': 'Количесвто должно быть положительным.'}
                 )
