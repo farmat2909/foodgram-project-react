@@ -180,7 +180,8 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             )
         if data['cooking_time'] < 0:
             raise serializers.ValidationError(
-                'Время приготовления должно быть положительным числом.'
+                {'cooking_time': (
+                    'Время приготовления должно быть положительным.')}
             )
         if len(tags) > len(set(tags)):
             raise serializers.ValidationError(
@@ -191,6 +192,10 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             if key in ingredients_data:
                 raise serializers.ValidationError(
                     'Ингредиент не может повторяться!'
+                )
+            if key == 'amount' and key < 1:
+                raise serializers.ValidationError(
+                    {'amount': 'Количесвто должно быть положительным.'}
                 )
             ingredients_data.append(key)
         return data
