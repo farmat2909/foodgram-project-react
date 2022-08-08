@@ -24,7 +24,7 @@
 1. Склонируйте репозиторий на локальную машину.
 
     ```
-    git clone git@github.com:афкьфе2909/foodgram-project-react.git
+    git clone git@github.com:farmat2909/foodgram-project-react.git
     ```
 
 2. Необходимо создать в папке /infra файл .env и заполнить переменными окружения.:

@@ -22,19 +22,13 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     pagination_class = CustomPagination
 
-    """не могу решить проблему с отображением страницы подписок"""
     @action(
         detail=False,
         methods=['get'],
-        permission_classes=(AuthorOrAdminOrReadOnly,),
-        pagination_class=CustomPagination)
+        permission_classes=(AuthorOrAdminOrReadOnly,))
     def subscriptions(self, request):
         queryset = request.user.follower.all()
         context = {'request': request}
-        # serializer = SubscribeSerializer(
-        #     queryset, context=context, many=True)
-        # return Response(serializer.data)
-
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = SubscribeSerializer(
