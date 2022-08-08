@@ -2,7 +2,7 @@ from djoser.serializers import UserCreateSerializer
 from drf_base64.fields import Base64ImageField
 from recipes.models import (Favorite, Ingredient, IngredientAmountRecipe,
                             Recipe, ShopingCart, Tag)
-from rest_framework import serializers
+from rest_framework import serializers, validators
 from users.models import Follow, User
 
 
@@ -92,6 +92,13 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
             'id',
             'amount'
         )
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=IngredientAmountRecipe.objects.all(),
+                fields=['ingredient', 'amount'],
+                message='Ингредиент и количество не может повторяться!'
+            )
+        ]
 
     def validate(self, data):
         if int(data['amount']) < 1:
@@ -189,10 +196,6 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             if key in ingredients_data:
                 raise serializers.ValidationError(
                     {'ingredient': 'Ингредиент не может повторяться!'}
-                )
-            elif key == 'amount' and int(ingredients_data[key]) < 1:
-                raise serializers.ValidationError(
-                    {'amount': 'Количество должно быть положительным.'}
                 )
             ingredients_data.append(key)
         return data
