@@ -93,6 +93,13 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
             'amount'
         )
 
+    def validate(self, data):
+        if int(data['amount']) < 1:
+            raise serializers.ValidationError(
+                {'amount': 'Количество должно быть положительным.'}
+            )
+        return data
+
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     """Сериализатор рецепта на чтение."""
