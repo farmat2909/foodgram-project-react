@@ -57,7 +57,7 @@
     sudo docker compose exec backend python manage.py load_test_data
     ```
 
-6. Готово! Ниже представлены доступные адреса проекта:
+6. Ниже представлены доступные адреса проекта:
     -  http://51.250.100.129/ - главная страница сайта;
     -  http://51.250.100.129/admin/ - админ панель;
     -  admin login: admin

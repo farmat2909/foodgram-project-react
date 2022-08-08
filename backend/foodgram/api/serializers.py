@@ -92,13 +92,6 @@ class IngredientWriteSerializer(serializers.ModelSerializer):
             'id',
             'amount'
         )
-        validators = [
-            validators.UniqueTogetherValidator(
-                queryset=IngredientAmountRecipe.objects.all(),
-                fields=['ingredient', 'amount'],
-                message='Ингредиент и количество не может повторяться!'
-            )
-        ]
 
     def validate(self, data):
         if int(data['amount']) < 1:
