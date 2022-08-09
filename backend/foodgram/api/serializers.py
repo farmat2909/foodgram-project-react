@@ -186,11 +186,12 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
             )
         ingredients_data = []
         for key in ingredients:
+            ingredient_id = key['ingredient']
             if key in ingredients_data:
                 raise serializers.ValidationError(
                     {'ingredient': 'Ингредиент не может повторяться!'}
                 )
-            ingredients_data.append(key)
+            ingredients_data.append(ingredient_id)
         return data
 
     def ingredient_get_or_create(self, obj, data):
