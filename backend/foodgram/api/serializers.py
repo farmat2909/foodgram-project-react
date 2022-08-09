@@ -187,7 +187,7 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         ingredients_data = []
         for key in ingredients:
             ingredient_id = key['ingredient']
-            if key in ingredients_data:
+            if ingredient_id in ingredients_data:
                 raise serializers.ValidationError(
                     {'ingredient': 'Ингредиент не может повторяться!'}
                 )
